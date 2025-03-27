@@ -72,9 +72,9 @@ const Header = () => {
     <>
       <div className="h-[80px] px-[24px] bg-[#7667EA] flex items-center justify-between shadow-lg">
         {/* Logo  */}
-        <div className="text-[46px] w-[246px] text-white font-poppins font-medium">
+        <Link href to={"/"} className="text-[46px] w-[246px] text-white font-poppins font-medium">
           A Plus Plus
-        </div>
+        </Link>
 
         {/* Name employees */}
         <div className="flex items-center justify-center font-roboto space-x-[17px]">

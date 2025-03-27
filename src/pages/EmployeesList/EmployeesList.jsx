@@ -12,18 +12,24 @@ const EmployeesList = () => {
   const [form] = Form.useForm();
   const [selectedUser, setSelectedUser] = useState(null);
 
+  const [current, setCurrent] = useState(1)
+  const [pageSize, setPageSize] = useState(5)
+  const [total, setTotal] = useState(0)
+
   const fetchData = async () => {
     try {
       const res = await fetchAll();
+      console.log("Check", res)
       setEmployeeList(res.data.userDTOList);
     } catch (error) {
       console.error("Fetch failed:", error);
     }
+
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [[current, pageSize]]);
 
   // Mở modal update, fill sẵn form
   const handleUpdateRequest = async (id) => {
@@ -49,7 +55,7 @@ const EmployeesList = () => {
       await updateUser(selectedUser.id, values.name, values.email, values.password);
       message.success("Update successfully");
       setIsModalOpen(false);
-      fetchData(); // reload lại danh sách
+      fetchData();
     } catch (error) {
       message.error("Update failed");
     }
@@ -85,8 +91,25 @@ const EmployeesList = () => {
     },
   ];
 
+  const onChange = (pagination, filters, sorter, extra) => {
+    // setCurrent, setPageSize
+    // nếu thay đổi trang: current
+    if (pagination && pagination.current) {
+      if (+pagination.current !== +current) {
+        setCurrent(+pagination.current) // "5" => 5
+      }
+    }
+
+    // nếu thay đổi tổng số phần tử: pageSize
+    if (pagination && pagination.pageSize) {
+      if (+pagination.pageSize !== +pageSize) {
+        setPageSize(+pagination.pageSize) // "5" => 5
+      }
+    }
+  };
+
   return (
-    <div className="bg-white rounded-xl p-8 shadow-lg">
+    <div className="bg-white rounded-xl p-8 shadow-lg w-full">
       <h1 className="text-2xl font-semibold mb-6">All Employees</h1>
       <div className="flex items-center justify-between mb-6">
         <Search_Input />
@@ -98,7 +121,15 @@ const EmployeesList = () => {
         columns={columns}
         dataSource={employeeList}
         rowKey="id"
-        pagination={{ pageSize: 20 }}
+        pagination={
+          {
+            current: current,
+            pageSize: pageSize,
+            showSizeChanger: true,
+            total: total,
+            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+          }}
+        onChange={onChange}
       />
 
       {/* Modal Update */}

@@ -12,6 +12,10 @@ const RequestLeave = () => {
   const [editData, setEditData] = useState(null);
   const [idRequest, setIdRequest] = useState("");
 
+  const [current, setCurrent] = useState(1)
+  const [pageSize, setPageSize] = useState(5)
+  const [total, setTotal] = useState(0)
+
   const handleUpdateRequest = (record) => {
     setEditData(record);
     setIsModalOpen(true);
@@ -84,8 +88,25 @@ const RequestLeave = () => {
     },
   ];
 
+  const onChange = (pagination, filters, sorter, extra) => {
+    // setCurrent, setPageSize
+    // nếu thay đổi trang: current
+    if (pagination && pagination.current) {
+      if (+pagination.current !== +current) {
+        setCurrent(+pagination.current) // "5" => 5
+      }
+    }
+
+    // nếu thay đổi tổng số phần tử: pageSize
+    if (pagination && pagination.pageSize) {
+      if (+pagination.pageSize !== +pageSize) {
+        setPageSize(+pagination.pageSize) // "5" => 5
+      }
+    }
+  };
+
   return (
-    <div className="bg-white rounded-xl p-8 shadow-lg">
+    <div className="bg-white rounded-xl p-8 shadow-lg w-full">
       <h1 className="text-2xl font-semibold mb-6">Request Leave</h1>
       <div className="flex items-center justify-between mb-6">
         <Search_Input />
@@ -96,6 +117,16 @@ const RequestLeave = () => {
         className="rounded-lg border"
         columns={columns}
         dataSource={RequestLeavedata}
+
+        pagination={
+          {
+            current: current,
+            pageSize: pageSize,
+            showSizeChanger: true,
+            total: total,
+            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+          }}
+        onChange={onChange}
       />
 
       <Modal

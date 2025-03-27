@@ -12,7 +12,7 @@ const Layout = ({ children }) => {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col">
           {/* Dynamic Content */}
-          <div className="mt-[48px] mx-[44px] w-full flex justify-center">
+          <div className="mt-[10px] mx-[20px] flex justify-center">
             {children}
           </div>
         </div>
