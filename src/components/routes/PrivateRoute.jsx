@@ -5,14 +5,16 @@ import { Result, Button, Spin } from "antd";
 import { getMyInfo } from "../../services/api.service";
 
 const PrivateRoute = ({ role, children }) => {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, isLoading } = useContext(AuthContext);
   // const [isLoading, setIsLoading] = useState(true);
   const token = localStorage.getItem("access_token");
 
-  if (!user || !user.id || !token) {
-    return <Navigate to="/login" replace />;
-  }
+  // if (!user || !user.id || !token) {
+  //   console.log("kicked user");
+  //   return <Navigate to="/login" replace />;
+  // }
 
+  if (isLoading) return;
   if (role && user.role !== role) {
     return (
       <Result

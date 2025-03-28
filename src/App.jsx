@@ -27,9 +27,10 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { getMyInfo } from "./services/api.service";
 import { Spin } from "antd";
+import MyLeaveRequest from "./pages/MyLeaveRequest/MyLeaveRequest";
 function App() {
-  const { user, setUser } = useContext(AuthContext);
-  const [isLoading, setIsLoading] = useState(false);
+  const { user, setUser, isLoading, setIsLoading } = useContext(AuthContext);
+
   const token = localStorage.getItem("access_token");
   const navigate = useNavigate();
 
@@ -39,10 +40,16 @@ function App() {
 
   const fetchUserAPI = async () => {
     setIsLoading(true);
+
     if (token) {
-      const res = await getMyInfo();
-      if (res.data) {
-        setUser(res.data.myInfoDTO);
+      try {
+        const res = await getMyInfo();
+        if (res.data) {
+          setUser(res.data.myInfoDTO);
+          console.log("User info:", res.data.myInfoDTO);
+        }
+      } catch (error) {
+        navigate("/login");
       }
     } else {
       navigate("/login");
@@ -105,6 +112,17 @@ function App() {
             <SidebarLayout>
               <CreateLeaveRequest />
             </SidebarLayout>
+          }
+        />
+
+        <Route
+          path="/my-request"
+          element={
+            <PrivateRoute role="EMPLOYEE">
+              <SidebarLayout>
+                <MyLeaveRequest />
+              </SidebarLayout>
+            </PrivateRoute>
           }
         />
 
