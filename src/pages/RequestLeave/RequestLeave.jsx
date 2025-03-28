@@ -4,10 +4,10 @@ import { IoTrashBin } from "react-icons/io5";
 import { FaPencil } from "react-icons/fa6";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
-import { Select } from "antd";
+
 import { deleteRequest, getRequestLeave,viewALLByDayRangeManager, getRejectRequest, getAcceptRequest } from "../../services/api.service";
 const { Option } = Select;
-import Search_Input from "../../components/Search_Input/Search_Input";
+
 import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
@@ -58,7 +58,10 @@ const RequestLeave = () => {
       message.error("Delete failed");
     }
   };
-
+  const handleDateChange = (dates) => {
+    setDateRange(dates);
+    setPage(1);
+  };
   const columns = [
     { title: "ID", render: (_, __, index) => index + 1 + (page - 1) * size },
     { title: "Start Date", dataIndex: "startDate" },

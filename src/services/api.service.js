@@ -112,7 +112,7 @@ export {
     signUpAPI,
     getMyInfo,
     deleteRequest,
-    getRequestLeaveByUserId
+    getRequestLeaveByUserId,
     getAcceptRequest,
     getRejectRequest,
 };
