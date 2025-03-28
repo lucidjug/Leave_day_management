@@ -1,21 +1,37 @@
-import { useState } from "react";
-import { Button, Input, Form, Checkbox, Card, Typography } from "antd";
+import { useContext, useState } from "react";
+import { Button, Input, Form, Checkbox, Card, Typography, message, notification } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./Login.css";
 import LoginImg from "../../assets/login.webp";
 import { NavLink } from "react-router-dom";
+import { loginAPI } from "../../services/api.service";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const { Title, Text } = Typography;
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
+  const navigate = useNavigate()
+  const { setUser } = useContext(AuthContext)
 
-  const onFinish = (values) => {
-    setLoading(true);
-    console.log("Thông tin đăng nhập:", values);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
+  const onFinish = async (values) => {
+    // setLoading(true);
+    const res = await loginAPI(values.email, values.password)
+    console.log("check ", res)
+    if (res.data) {
+      message.success("Đăng nhập thành công");
+      localStorage.setItem("access_token", res.data.token);
+      setUser(res)
+      navigate("/")
+    } else {
+      notification.error({
+        message: "Error Login",
+        description: res.message
+      })
+    }
+    // setLoading(false)
   };
 
   return (
@@ -33,7 +49,9 @@ const Login = () => {
             Please enter your login detail to sign in
           </Text>
 
-          <Form name="login" onFinish={onFinish} layout="vertical">
+          <Form
+            form={form}
+            name="login" onFinish={onFinish} layout="vertical">
             <Form.Item
               name="email"
               label="Email Address"
@@ -41,7 +59,7 @@ const Login = () => {
                 { required: true, message: "Please enter your email!" },
                 { type: "email", message: "Invalid email format!" },
               ]}
-              style={{ display: "block", marginBottom: "1em",  }}
+              style={{ display: "block", marginBottom: "1em", }}
             >
               <Input
                 prefix={<UserOutlined />}
@@ -56,9 +74,9 @@ const Login = () => {
               rules={[{ required: true, message: "Please enter your password!" }]}
               style={{ display: "block", marginBottom: "1em" }}
             >
-              <Input.Password prefix={<LockOutlined />} 
-                placeholder="Enter your password"  
-                style={{ padding: "10px 20px", fontSize: "16px", height: "45px" }}/>
+              <Input.Password prefix={<LockOutlined />}
+                placeholder="Enter your password"
+                style={{ padding: "10px 20px", fontSize: "16px", height: "45px" }} />
             </Form.Item>
 
             <Form.Item>
