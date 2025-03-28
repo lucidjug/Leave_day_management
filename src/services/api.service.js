@@ -51,6 +51,21 @@ const getRequestLeave = (page, size) => {
     return axios.get(URL_BACKEND);
 };
 
+const viewALLByDayRangeManager = (startDate,endDate) =>{
+    const URL_BACKEND = "/leave-requests/view-by-date-range";
+    return axios.get(URL_BACKEND, {
+        params: {
+          startDate: startDate,
+          endDate: endDate
+        }
+      });
+};
+
+const viewByIDManager = (id) =>{
+    const URL_BACKEND = `/leave-requests/view/${id}`;
+    return axios.get(URL_BACKEND);
+}
+
 const loginAPI = (email, password) => {
     const URL_BACKEND = "/auth/login";
     const data = {
@@ -67,5 +82,7 @@ export {
     getUserById,
     updateUser,
     getRequestLeave,
-    loginAPI
+    loginAPI,
+    viewALLByDayRangeManager,
+    viewByIDManager
 };
