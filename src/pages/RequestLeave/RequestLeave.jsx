@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Modal, Form, Input, message } from "antd";
+import { Space, Table, Tag, Modal, Form, Input, message, Button } from "antd";
 import { FaPencil } from "react-icons/fa6";
 import { IoTrashBin } from "react-icons/io5";
 import Search_Input from "../../components/Search_Input/Search_Input";
@@ -14,13 +14,13 @@ const RequestLeave = () => {
   const [editData, setEditData] = useState(null);
   const [idRequest, setIdRequest] = useState("");
 
-  const [page, setPage] = useState(1)
-  const [size, setSize] = useState(5)
-  const [total, setTotal] = useState(5)
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(5);
+  const [total, setTotal] = useState(5);
 
   useEffect(() => {
-    fetchRequestData()
-  }, [page, size])
+    fetchRequestData();
+  }, [page, size]);
 
   const fetchRequestData = async () => {
     try {
@@ -50,12 +50,8 @@ const RequestLeave = () => {
     {
       title: "ID",
       render: (_, record, index) => {
-        return (
-          <>
-            {(index + 1) + (page - 1) * size}
-          </>
-        )
-      }
+        return <>{index + 1 + (page - 1) * size}</>;
+      },
     },
     { title: "Start Date", dataIndex: "startDate" },
     { title: "End Date", dataIndex: "endDate" },
@@ -65,11 +61,13 @@ const RequestLeave = () => {
       dataIndex: "status",
       render: (status) => {
         let color =
-          status === "ACCEPTED" ? "green" :
-            status === "REJECTED" ? "red" :
-              "gold"; // "PENDING"
+          status === "ACCEPTED"
+            ? "green"
+            : status === "REJECTED"
+            ? "red"
+            : "gold"; // "PENDING"
         return <Tag color={color}>{status}</Tag>;
-      }
+      },
     },
     {
       title: "Action",
@@ -90,17 +88,17 @@ const RequestLeave = () => {
   const onChange = (pagination, filters, sorter, extra) => {
     // setCurrent, setPageSize
     // nếu thay đổi trang: current
-    console.log(">>>>Check:", pagination)
+    console.log(">>>>Check:", pagination);
     if (pagination && pagination.current) {
       if (+pagination.current !== +page) {
-        setPage(+pagination.current) // "5" => 5
+        setPage(+pagination.current); // "5" => 5
       }
     }
 
     // nếu thay đổi tổng số phần tử: pageSize
     if (pagination && pagination.pageSize) {
       if (+pagination.pageSize !== +size) {
-        setSize(+pagination.pageSize) // "5" => 5
+        setSize(+pagination.pageSize); // "5" => 5
       }
     }
   };
@@ -118,14 +116,20 @@ const RequestLeave = () => {
         columns={columns}
         dataSource={requestLeave}
         rowKey="id"
-        pagination={
-          {
-            current: page,
-            pageSize: size,
-            showSizeChanger: true,
-            total: total,
-            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
-          }}
+        pagination={{
+          current: page,
+          pageSize: size,
+          showSizeChanger: true,
+          total: total,
+          showTotal: (total, range) => {
+            return (
+              <div>
+                {" "}
+                {range[0]}-{range[1]} trên {total} rows
+              </div>
+            );
+          },
+        }}
         onChange={onChange}
       />
 
@@ -134,6 +138,17 @@ const RequestLeave = () => {
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={() => console.log("Updated Data:", editData)}
+        footer={
+          <div className="flex items-center space-x-2">
+            {/* lát chỉnh */}
+            <Button key="cancel" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button key="submit" type="primary">
+              OK
+            </Button>
+          </div>
+        }
       >
         <Form layout="vertical">
           <Form.Item label="Employee ID">
@@ -182,7 +197,9 @@ const RequestLeave = () => {
           <Form.Item label="Status">
             <Select
               value={editData?.status || "PENDING"} // Đảm bảo có giá trị mặc định
-              onChange={(value) => setEditData(prev => ({ ...prev, status: value }))}
+              onChange={(value) =>
+                setEditData((prev) => ({ ...prev, status: value }))
+              }
             >
               <Select.Option value="ACCEPTED">APPROVED</Select.Option>
               <Select.Option value="REJECTED">REJECT</Select.Option>
@@ -191,7 +208,6 @@ const RequestLeave = () => {
           </Form.Item>
         </Form>
       </Modal>
-
     </div>
   );
 };

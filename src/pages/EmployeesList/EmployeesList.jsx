@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Form, Input, Modal, Space, Table, Button, message } from "antd";
-import { fetchAll, deleteUser, getUserById, updateUser } from "../../services/api.service";
+import {
+  fetchAll,
+  deleteUser,
+  getUserById,
+  updateUser,
+} from "../../services/api.service";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
 import { FaPencil } from "react-icons/fa6";
@@ -12,19 +17,18 @@ const EmployeesList = () => {
   const [form] = Form.useForm();
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const [current, setCurrent] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
-  const [total, setTotal] = useState(0)
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [total, setTotal] = useState(0);
 
   const fetchData = async () => {
     try {
       const res = await fetchAll();
-      console.log("Check", res)
+      console.log("Check", res);
       setEmployeeList(res.data.userDTOList);
     } catch (error) {
       console.error("Fetch failed:", error);
     }
-
   };
 
   useEffect(() => {
@@ -40,7 +44,7 @@ const EmployeesList = () => {
       form.setFieldsValue({
         name: user.name,
         email: user.email,
-        password: ""
+        password: "",
       });
       setIsModalOpen(true);
     } catch (error) {
@@ -52,7 +56,12 @@ const EmployeesList = () => {
   const handleUpdateSubmit = async () => {
     try {
       const values = form.getFieldsValue();
-      await updateUser(selectedUser.id, values.name, values.email, values.password);
+      await updateUser(
+        selectedUser.id,
+        values.name,
+        values.email,
+        values.password
+      );
       message.success("Update successfully");
       setIsModalOpen(false);
       fetchData();
@@ -96,14 +105,14 @@ const EmployeesList = () => {
     // nếu thay đổi trang: current
     if (pagination && pagination.current) {
       if (+pagination.current !== +current) {
-        setCurrent(+pagination.current) // "5" => 5
+        setCurrent(+pagination.current); // "5" => 5
       }
     }
 
     // nếu thay đổi tổng số phần tử: pageSize
     if (pagination && pagination.pageSize) {
       if (+pagination.pageSize !== +pageSize) {
-        setPageSize(+pagination.pageSize) // "5" => 5
+        setPageSize(+pagination.pageSize); // "5" => 5
       }
     }
   };
@@ -121,14 +130,20 @@ const EmployeesList = () => {
         columns={columns}
         dataSource={employeeList}
         rowKey="id"
-        pagination={
-          {
-            current: current,
-            pageSize: pageSize,
-            showSizeChanger: true,
-            total: total,
-            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
-          }}
+        pagination={{
+          current: current,
+          pageSize: pageSize,
+          showSizeChanger: true,
+          total: total,
+          showTotal: (total, range) => {
+            return (
+              <div>
+                {" "}
+                {range[0]}-{range[1]} trên {total} rows
+              </div>
+            );
+          },
+        }}
         onChange={onChange}
       />
 
@@ -137,18 +152,35 @@ const EmployeesList = () => {
         title="Update User"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        onOk={handleUpdateSubmit}
+        footer={
+          <div className="flex items-center space-x-2">
+            <Button key="cancel" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button key="submit" type="primary" onClick={handleUpdateSubmit}>
+              OK
+            </Button>
+          </div>
+        }
       >
         <Form form={form} layout="vertical">
-          <Form.Item label="Name" name="name" rules={[{ required: true, message: "Please input name" }]}>
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[{ required: true, message: "Please input name" }]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Email" name="email" rules={[{ required: true, message: "Please input email" }]}>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: "Please input email" }]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Password" name="password">
+          {/* <Form.Item label="Password" name="password">
             <Input.Password placeholder="Leave blank to keep old password" />
-          </Form.Item>
+          </Form.Item> */}
         </Form>
       </Modal>
     </div>
