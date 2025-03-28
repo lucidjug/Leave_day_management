@@ -5,7 +5,7 @@ import { Input } from "antd";
 
 const Search_Input = () => {
     return (
-        <div className="relative w-1/3">
+        <div className="relative w-1/6">
             <Input
                 size="large"
                 prefix={<SearchOutlined />}

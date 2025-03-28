@@ -1,29 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Modal, Form, Input, message, Button } from "antd";
+import { Space, Table, Tag, Modal, Form, Input, message, DatePicker, Select, Button, Flex } from "antd";
 import { IoTrashBin } from "react-icons/io5";
+import { FaPencil } from "react-icons/fa6";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
 import { Select } from "antd";
-import { deleteRequest, getRequestLeave } from "../../services/api.service";
+import { deleteRequest, getRequestLeave,viewALLByDayRangeManager, getRejectRequest, getAcceptRequest } from "../../services/api.service";
 const { Option } = Select;
+import Search_Input from "../../components/Search_Input/Search_Input";
+import dayjs from "dayjs";
 
+const { RangePicker } = DatePicker;
 const RequestLeave = () => {
   const [requestLeave, setRequestLeave] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
-  const [idRequest, setIdRequest] = useState("");
-
+  const [dateRange, setDateRange] = useState(null);
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(5);
-  const [total, setTotal] = useState(5);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     fetchRequestData();
-  }, [page, size]);
+  }, [page, size, dateRange]);
+  const [idRequest, setIdRequest] = useState("");
+
 
   const fetchRequestData = async () => {
     try {
-      const res = await getRequestLeave(page - 1, size);
+      let res;
+      if (dateRange && dateRange.length === 2) {
+        const startDate = dateRange[0].format("YYYY-MM-DD");
+        const endDate = dateRange[1].format("YYYY-MM-DD");
+        res = await viewALLByDayRangeManager(startDate, endDate, page - 1, size);
+      } else {
+        res = await getRequestLeave(page - 1, size);
+      }
+
       if (res.data && res.data.leaveRequestDTOList) {
         setRequestLeave(res.data.leaveRequestDTOList);
         setTotal(res.data.totalElements);
@@ -34,6 +47,7 @@ const RequestLeave = () => {
       message.error("No data to response");
     }
   };
+
 
   const handleDeleteRequest = async (id) => {
     try {
@@ -46,12 +60,7 @@ const RequestLeave = () => {
   };
 
   const columns = [
-    {
-      title: "ID",
-      render: (_, record, index) => {
-        return <>{index + 1 + (page - 1) * size}</>;
-      },
-    },
+    { title: "ID", render: (_, __, index) => index + 1 + (page - 1) * size },
     { title: "Start Date", dataIndex: "startDate" },
     { title: "End Date", dataIndex: "endDate" },
     { title: "Reason", dataIndex: "reason" },
@@ -70,7 +79,6 @@ const RequestLeave = () => {
     },
     {
       title: "Action",
-      key: "action",
       render: (_, record) => (
         <Space size="middle">
           <button onClick={() => handleDeleteRequest(record.id)}>
@@ -80,24 +88,51 @@ const RequestLeave = () => {
       ),
     },
   ];
-
-  const onChange = (pagination, filters, sorter, extra) => {
-    // setCurrent, setPageSize
-    // nếu thay đổi trang: current
-    console.log(">>>>Check:", pagination);
-    if (pagination && pagination.current) {
-      if (+pagination.current !== +page) {
-        setPage(+pagination.current); // "5" => 5
+  const handleAcceptRequest = async () => {
+    try {
+      if (!editData || !editData.id) {
+        message.error("No request selected!");
+        return;
       }
-    }
 
-    // nếu thay đổi tổng số phần tử: pageSize
-    if (pagination && pagination.pageSize) {
-      if (+pagination.pageSize !== +size) {
-        setSize(+pagination.pageSize); // "5" => 5
+      const res = await getAcceptRequest(editData.id);
+      console.log(res)
+      if (res.status === 200) {
+        
+        setIsModalOpen(false);
+        message.success(res.data.message);
+        fetchRequestData();
+      } else {
+        message.error("Failed to approve request!");
       }
+    } catch (error) {
+      console.error("Error approving request:", error);
+      message.error("An error occurred while approving the request!");
     }
   };
+
+  const handleRejectRequest = async () => {
+    try {
+      if (!editData || !editData.id) {
+        message.error("No request selected!");
+        return;
+      }
+
+      const res = await getRejectRequest(editData.id);
+      console.log(res)
+      if (res.status === 200) {
+        message.error(res.data.message);
+        setIsModalOpen(false);
+        fetchRequestData();
+      } else {
+        message.error("Failed to reject request!");
+      }
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+      message.error("An error occurred while rejecting the request!");
+    }
+  };
+
 
   return (
     <div className="bg-white rounded-xl p-8 shadow-lg w-full">
@@ -105,6 +140,7 @@ const RequestLeave = () => {
       <div className="flex items-center justify-between mb-6">
         <Search_Input />
         <FilterInput />
+        <RangePicker onChange={handleDateChange} />
       </div>
 
       <Table
@@ -117,93 +153,46 @@ const RequestLeave = () => {
           pageSize: size,
           showSizeChanger: true,
           total: total,
-          showTotal: (total, range) => {
-            return (
-              <div>
-                {" "}
-                {range[0]}-{range[1]} trên {total} rows
-              </div>
-            );
-          },
+          showTotal: (total, range) => `${range[0]}-${range[1]} trên ${total} rows`,
         }}
-        onChange={onChange}
+        onChange={(pagination) => {
+          setPage(pagination.current);
+          setSize(pagination.pageSize);
+        }}
       />
 
       <Modal
         title="Update Request"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        onOk={() => console.log("Updated Data:", editData)}
         footer={
-          <div className="flex items-center space-x-2">
-            {/* lát chỉnh */}
-            <Button key="cancel" onClick={() => setIsModalOpen(false)}>
-              Cancel
+          <Flex justify="center" gap={100}>
+            <Button
+              key="accept"
+              type="primary"
+              block
+              style={{ maxWidth: 100 }}
+              onClick={handleAcceptRequest} 
+            >
+              ACCEPT
             </Button>
-            <Button key="submit" type="primary">
-              OK
+            <Button
+              key="reject"
+              type="primary"
+              danger
+              block
+              style={{ maxWidth: 100 }}
+              onClick={handleRejectRequest} 
+            >
+              REJECT
             </Button>
-          </div>
+          </Flex>
         }
       >
-        <Form layout="vertical">
-          <Form.Item label="Employee ID">
-            <Input
-              value={editData?.employee_id}
-              onChange={(e) =>
-                setEditData({ ...editData, employee_id: e.target.value })
-              }
-            />
-          </Form.Item>
-          <Form.Item label="Manager ID">
-            <Input
-              value={editData?.manager_id}
-              onChange={(e) =>
-                setEditData({ ...editData, manager_id: e.target.value })
-              }
-            />
-          </Form.Item>
-          <Form.Item label="Start Date">
-            <Input
-              value={editData?.startDate}
-              type="date"
-              onChange={(e) =>
-                setEditData({ ...editData, startDate: e.target.value })
-              }
-            />
-          </Form.Item>
-          <Form.Item label="End Date">
-            <Input
-              value={editData?.endDate}
-              type="date"
-              onChange={(e) =>
-                setEditData({ ...editData, endDate: e.target.value })
-              }
-            />
-          </Form.Item>
-          <Form.Item label="Reason">
-            <Input
-              value={editData?.reason}
-              onChange={(e) =>
-                setEditData({ ...editData, reason: e.target.value })
-              }
-            />
-          </Form.Item>
-
-          <Form.Item label="Status">
-            <Select
-              value={editData?.status || "PENDING"} // Đảm bảo có giá trị mặc định
-              onChange={(value) =>
-                setEditData((prev) => ({ ...prev, status: value }))
-              }
-            >
-              <Select.Option value="ACCEPTED">APPROVED</Select.Option>
-              <Select.Option value="REJECTED">REJECT</Select.Option>
-              <Select.Option value="PENDING">PENDING</Select.Option>
-            </Select>
-          </Form.Item>
-        </Form>
+        <p>Are you sure you want to update the status of this request?</p>
       </Modal>
+
+
     </div>
   );
 };

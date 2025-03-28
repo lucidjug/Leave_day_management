@@ -1,18 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Space, Table, Tag } from "antd";
 import Search_Input from "../../components/Search_Input/Search_Input"
 import FilterInput from "../../components/FilterInput/FilterInput"
 
 const columns = [
     {
-        title: "employee_id",
-        dataIndex: "employee_id",
-        key: "employee_id",
-    },
-    {
-        title: "manager_id",
-        dataIndex: "manager_id",
-        key: "manager_id",
+        title: "userEmail",
+        dataIndex: "userEmail",
+        key: "userEmail",
     },
     {
         title: "startDate",
@@ -55,36 +50,17 @@ const columns = [
     },
 ];
 
-const RequestLeavedata = [
-    {
-        id: "1",
-        employee_id: "John Brown",
-        manager_id: "John Brown",
-        startDate: "01/01/2025",
-        endDate: "01/01/2025",
-        reason: "Sick",
-        status: "Accept",
-    },
-    {
-        id: "2",
-        employee_id: "John Brown",
-        manager_id: "John Brown",
-        startDate: "01/01/2025",
-        endDate: "01/01/2025",
-        reason: "Sick",
-        status: "Accept",
-    },
-    {
-        id: "3",
-        employee_id: "John Brown",
-        manager_id: "John Brown",
-        startDate: "01/01/2025",
-        endDate: "01/01/2025",
-        reason: "Sick",
-        status: "Accept",
-    },
-];
-const LeaveHistory = () => {
+
+const LeaveHistory = () => { 
+    const [allRequestLeavedata,setAllRequestLeavedata] = useState([])
+    const [current, setCurrent] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
+
+    // useEffect(()=>{
+    //     const getAllLeaveRequests = async ()=>{
+    //         const response = await getRequestLeave()
+    //     }
+    // },[current, pageSize])
     return (
         <div className="bg-white rounded-xl p-8 shadow-lg">
             <h1 className="text-2xl font-semibold mb-6">Request Leave</h1>
@@ -96,7 +72,17 @@ const LeaveHistory = () => {
             <Table
                 className="rounded-lg border"
                 columns={columns}
-                dataSource={RequestLeavedata}
+                dataSource={allRequestLeavedata}
+                rowKey="id"
+                pagination={
+                  {
+                    current: current,
+                    pageSize: pageSize,
+                    showSizeChanger: true,
+                    // total: total,
+                    showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                  }}
+                // onChange={onChange}
             />
         </div>
     );
