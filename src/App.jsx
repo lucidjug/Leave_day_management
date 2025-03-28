@@ -4,7 +4,7 @@
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import SidebarLayout from "./components/layout/SidebarLayout";
@@ -13,32 +13,60 @@ import RequestLeave from "./pages/RequestLeave/RequestLeave";
 import EmployeesList from "./pages/EmployeesList/EmployeesList";
 
 import CreateLeaveRequest from "./pages/CreateLeaveRequest/CreateLeaveRequest";
-import CreateEmployees from "./pages/CreateEmployees/CreateEmployees";
+
 import Profile from "./pages/Profile/Profile";
 
 // Pages
 import Login from "./pages/Login/Login";
-import SignUp from "./pages/SignUp/SignUp";
-// import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
-// import ResetPassword from "./pages/ResetPassword/ResetPassword";
+import Register from "./pages/Register/Register";
 
-// import HomePage from "./pages/HomePage/HomePage";
-// import Dashboard from "./pages/Dashboard/Dashboard";
+// Authenticated
+import PrivateRoute from "./components/routes/PrivateRoute";
 
-// Admin
-
-// User
-
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "./context/AuthContext";
+import { getMyInfo } from "./services/api.service";
+import { Spin } from "antd";
 function App() {
+  const { user, setUser } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const token = localStorage.getItem("access_token");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchUserAPI();
+  }, []);
+
+  const fetchUserAPI = async () => {
+    setIsLoading(true);
+    console.log(token);
+    if (token) {
+      const res = await getMyInfo();
+      if (res.data) {
+        setUser(res.data.myInfoDTO);
+        console.log("User info:", res.data.myInfoDTO);
+      }
+    } else {
+      navigate("/login");
+    }
+    setIsLoading(false);
+  };
+
+  if (isLoading) {
+    return (
+      <Spin
+        size="large"
+        className="flex justify-center items-center h-screen"
+      />
+    );
+  }
   return (
     <>
       <ScrollToTop />
       <Routes>
         {/* Auth routes */}
-        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        {/* <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} /> */}
 
         {/* All roles */}
         {/* <Route path="/" element={<HomePage />} /> */}
@@ -56,9 +84,11 @@ function App() {
         <Route
           path="/request-leave"
           element={
-            <SidebarLayout>
-              <RequestLeave />
-            </SidebarLayout>
+            <PrivateRoute role="MANAGER">
+              <SidebarLayout>
+                <RequestLeave />
+              </SidebarLayout>
+            </PrivateRoute>
           }
         />
 
@@ -76,15 +106,6 @@ function App() {
           element={
             <SidebarLayout>
               <CreateLeaveRequest />
-            </SidebarLayout>
-          }
-        />
-
-        <Route
-          path="/create-employees"
-          element={
-            <SidebarLayout>
-              <CreateEmployees />
             </SidebarLayout>
           }
         />
