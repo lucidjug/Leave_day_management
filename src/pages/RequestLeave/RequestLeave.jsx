@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Modal, Form, Input, message, DatePicker, Select,Button } from "antd";
+import { Space, Table, Tag, Modal, Form, Input, message, DatePicker, Select, Button, Flex } from "antd";
 import { FaPencil } from "react-icons/fa6";
 import { IoTrashBin } from "react-icons/io5";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
 import dayjs from "dayjs";
-import { getRequestLeave, viewALLByDayRangeManager } from "../../services/api.service";
+import { getRequestLeave, viewALLByDayRangeManager, getRejectRequest, getAcceptRequest } from "../../services/api.service";
 
 const { RangePicker } = DatePicker;
 const RequestLeave = () => {
@@ -22,8 +22,6 @@ const RequestLeave = () => {
   }, [page, size, dateRange]);
   const [idRequest, setIdRequest] = useState("");
 
-
-  
 
   const fetchRequestData = async () => {
     try {
@@ -66,8 +64,8 @@ const RequestLeave = () => {
           status === "ACCEPTED"
             ? "green"
             : status === "REJECTED"
-            ? "red"
-            : "gold"; // "PENDING"
+              ? "red"
+              : "gold"; // "PENDING"
         return <Tag color={color}>{status}</Tag>;
       },
     },
@@ -85,6 +83,51 @@ const RequestLeave = () => {
       ),
     },
   ];
+  const handleAcceptRequest = async () => {
+    try {
+      if (!editData || !editData.id) {
+        message.error("No request selected!");
+        return;
+      }
+
+      const res = await getAcceptRequest(editData.id);
+      console.log(res)
+      if (res.status === 200) {
+        
+        setIsModalOpen(false);
+        message.success(res.data.message);
+        fetchRequestData();
+      } else {
+        message.error("Failed to approve request!");
+      }
+    } catch (error) {
+      console.error("Error approving request:", error);
+      message.error("An error occurred while approving the request!");
+    }
+  };
+
+  const handleRejectRequest = async () => {
+    try {
+      if (!editData || !editData.id) {
+        message.error("No request selected!");
+        return;
+      }
+
+      const res = await getRejectRequest(editData.id);
+      console.log(res)
+      if (res.status === 200) {
+        message.error(res.data.message);
+        setIsModalOpen(false);
+        fetchRequestData();
+      } else {
+        message.error("Failed to reject request!");
+      }
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+      message.error("An error occurred while rejecting the request!");
+    }
+  };
+
 
   return (
     <div className="bg-white rounded-xl p-8 shadow-lg w-full">
@@ -117,64 +160,34 @@ const RequestLeave = () => {
         title="Update Request"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        onOk={() => console.log("Updated Data:", editData)}
         footer={
-          <div className="flex items-center space-x-2">
-            {/* lát chỉnh */}
-            <Button key="cancel" onClick={() => setIsModalOpen(false)}>
-              Cancel
+          <Flex justify="center" gap={100}>
+            <Button
+              key="accept"
+              type="primary"
+              block
+              style={{ maxWidth: 100 }}
+              onClick={handleAcceptRequest} 
+            >
+              ACCEPT
             </Button>
-            <Button key="submit" type="primary">
-              OK
+            <Button
+              key="reject"
+              type="primary"
+              danger
+              block
+              style={{ maxWidth: 100 }}
+              onClick={handleRejectRequest} 
+            >
+              REJECT
             </Button>
-          </div>
+          </Flex>
         }
       >
-        <Form layout="vertical">
-          <Form.Item label="Employee ID">
-            <Input
-              value={editData?.employee_id}
-              onChange={(e) => setEditData({ ...editData, employee_id: e.target.value })}
-            />
-          </Form.Item>
-          <Form.Item label="Manager ID">
-            <Input
-              value={editData?.manager_id}
-              onChange={(e) => setEditData({ ...editData, manager_id: e.target.value })}
-            />
-          </Form.Item>
-          <Form.Item label="Start Date">
-            <Input
-              value={editData?.startDate}
-              type="date"
-              onChange={(e) => setEditData({ ...editData, startDate: e.target.value })}
-            />
-          </Form.Item>
-          <Form.Item label="End Date">
-            <Input
-              value={editData?.endDate}
-              type="date"
-              onChange={(e) => setEditData({ ...editData, endDate: e.target.value })}
-            />
-          </Form.Item>
-          <Form.Item label="Reason">
-            <Input
-              value={editData?.reason}
-              onChange={(e) => setEditData({ ...editData, reason: e.target.value })}
-            />
-          </Form.Item>
-          <Form.Item label="Status">
-            <Select
-              value={editData?.status || "PENDING"}
-              onChange={(value) => setEditData((prev) => ({ ...prev, status: value }))}
-            >
-              <Select.Option value="ACCEPTED">APPROVED</Select.Option>
-              <Select.Option value="REJECTED">REJECT</Select.Option>
-              <Select.Option value="PENDING">PENDING</Select.Option>
-            </Select>
-          </Form.Item>
-        </Form>
+        <p>Are you sure you want to update the status of this request?</p>
       </Modal>
+
+
     </div>
   );
 };
