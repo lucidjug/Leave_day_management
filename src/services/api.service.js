@@ -1,16 +1,5 @@
 import axios from "./axios.customize";
 
-// const createUser = (fullName, email, password, phoneNumber) => {
-//     const URL_BACKEND = "/api/v1/user";
-//     const data = {
-//         fullName: fullName,
-//         email: email,
-//         password: password,
-//         phone: phoneNumber
-//     }
-//     return axios.post(URL_BACKEND, data)
-// }
-
 const createUser = (name, email, password) => {
     const URL_BACKEND = "/users/add";
     const data = {
@@ -48,6 +37,11 @@ const updateUser = (id, name, email, password) => {
 const getRequestLeave = (page, size) => {
     const URL_BACKEND = `/leave-requests/view?page=${page}&size=${size}`;
     return axios.get(URL_BACKEND);
+};
+
+const deleteRequest = (id) => {
+    const URL_BACKEND = `leave-requests/delete/${id}`;
+    return axios.delete(URL_BACKEND);
 };
 
 const viewALLByDayRangeManager = (startDate, endDate) => {
@@ -99,6 +93,11 @@ const getMyInfo = () => {
     return axios.get(URL_BACKEND);
 };
 
+const getRequestLeaveByUserId = (id, pageRequest, sizeRequest) => {
+    const URL_BACKEND = `/leave-requests/view-by-user-id/${id}?page=${pageRequest}&size=${sizeRequest}`;
+    return axios.get(URL_BACKEND);
+};
+
 export {
 
     viewALLByDayRangeManager,
@@ -112,7 +111,8 @@ export {
     loginAPI,
     signUpAPI,
     getMyInfo,
+    deleteRequest,
+    getRequestLeaveByUserId
     getAcceptRequest,
     getRejectRequest,
-
 };

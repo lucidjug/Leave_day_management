@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Space, Table, Tag, Modal, Form, Input, message, DatePicker, Select, Button, Flex } from "antd";
-import { FaPencil } from "react-icons/fa6";
 import { IoTrashBin } from "react-icons/io5";
+import { FaPencil } from "react-icons/fa6";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
+import { Select } from "antd";
+import { deleteRequest, getRequestLeave,viewALLByDayRangeManager, getRejectRequest, getAcceptRequest } from "../../services/api.service";
+const { Option } = Select;
+import Search_Input from "../../components/Search_Input/Search_Input";
 import dayjs from "dayjs";
-import { getRequestLeave, viewALLByDayRangeManager, getRejectRequest, getAcceptRequest } from "../../services/api.service";
 
 const { RangePicker } = DatePicker;
 const RequestLeave = () => {
@@ -38,17 +41,22 @@ const RequestLeave = () => {
         setRequestLeave(res.data.leaveRequestDTOList);
         setTotal(res.data.totalElements);
       } else {
-        message.error("Không lấy được dữ liệu nghỉ phép");
+        message.error("Can not get leave request");
       }
     } catch (error) {
-      console.error("Lỗi khi gọi API:", error);
-      message.error("Lỗi khi tải dữ liệu");
+      message.error("No data to response");
     }
   };
 
-  const handleDateChange = (dates) => {
-    setDateRange(dates);
-    setPage(1);
+
+  const handleDeleteRequest = async (id) => {
+    try {
+      await deleteRequest(id);
+      message.success("Delete request leave successfully");
+      fetchRequestData();
+    } catch (error) {
+      message.error("Delete failed");
+    }
   };
 
   const columns = [
@@ -72,11 +80,8 @@ const RequestLeave = () => {
     {
       title: "Action",
       render: (_, record) => (
-        <Space>
-          <button onClick={() => setEditData(record) || setIsModalOpen(true)}>
-            <FaPencil size={20} className="text-yellow-500" />
-          </button>
-          <button onClick={() => console.log(`delete request ${record.id}`)}>
+        <Space size="middle">
+          <button onClick={() => handleDeleteRequest(record.id)}>
             <IoTrashBin size={20} className="text-red-500" />
           </button>
         </Space>
