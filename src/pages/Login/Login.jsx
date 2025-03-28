@@ -41,7 +41,6 @@ const Login = () => {
     setLoading(true);
     try {
       const res = await loginAPI(values.email, values.password);
-      console.log("check ", res);
       if (res.data && res.data.token) {
         message.success("Login successfully!");
         localStorage.setItem("access_token", res.data.token);
@@ -139,7 +138,7 @@ const Login = () => {
                   Forgot password ?
                 </a>
 
-           
+
               </div>
             </Form.Item>
 

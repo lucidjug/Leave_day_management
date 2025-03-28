@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { Button, Input, Form, Checkbox, Card, Typography } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import {NavLink} from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 // import { AppleOutlined, GoogleOutlined, TwitterOutlined, FacebookOutlined } from "@ant-design/icons";
 import "./SignUp.css";
 import LoginImg from "../../assets/login.webp";
@@ -14,7 +14,6 @@ const SignUp = () => {
 
   const onFinish = (values) => {
     setLoading(true);
-    console.log("Thông tin đăng nhập:", values);
     setTimeout(() => {
       setLoading(false);
     }, 1500);
@@ -36,14 +35,14 @@ const SignUp = () => {
           </Text>
 
           <Form name="login" onFinish={onFinish} layout="vertical">
-          <Form.Item
+            <Form.Item
               name="name"
               label="Full name"
               rules={[
                 { required: true, message: "Please enter your full name!" },
                 { pattern: /^[A-Za-z\s]+$/, message: "Full name can only contain letters!" }
               ]}
-              style={{ display: "block", marginBottom: "1em",  }}
+              style={{ display: "block", marginBottom: "1em", }}
             >
               <Input
                 prefix={<UserOutlined />}
@@ -58,7 +57,7 @@ const SignUp = () => {
                 { required: true, message: "Please enter your email!" },
                 { type: "email", message: "Invalid email format!" },
               ]}
-              style={{ display: "block", marginBottom: "1em",  }}
+              style={{ display: "block", marginBottom: "1em", }}
             >
               <Input
                 prefix={<UserOutlined />}
@@ -73,9 +72,9 @@ const SignUp = () => {
               rules={[{ required: true, message: "Please enter your password!" }]}
               style={{ display: "block", marginBottom: "1em" }}
             >
-              <Input.Password prefix={<LockOutlined />} 
-                placeholder="Enter your password"  
-                style={{ padding: "10px 20px", fontSize: "16px", height: "45px" }}/>
+              <Input.Password prefix={<LockOutlined />}
+                placeholder="Enter your password"
+                style={{ padding: "10px 20px", fontSize: "16px", height: "45px" }} />
             </Form.Item>
             <Form.Item
               name="password"
@@ -83,9 +82,9 @@ const SignUp = () => {
               rules={[{ required: true, message: "Please enter your password!" }]}
               style={{ display: "block", marginBottom: "1em" }}
             >
-              <Input.Password prefix={<LockOutlined />} 
-                placeholder="Enter your password"  
-                style={{ padding: "10px 20px", fontSize: "16px", height: "45px" }}/>
+              <Input.Password prefix={<LockOutlined />}
+                placeholder="Enter your password"
+                style={{ padding: "10px 20px", fontSize: "16px", height: "45px" }} />
             </Form.Item>
 
             <Form.Item>

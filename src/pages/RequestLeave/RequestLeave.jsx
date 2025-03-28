@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Space, Table, Tag, Modal, Form, Input, message, Button } from "antd";
-import { FaPencil } from "react-icons/fa6";
 import { IoTrashBin } from "react-icons/io5";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
 import { Select } from "antd";
-import { getRequestLeave } from "../../services/api.service";
+import { deleteRequest, getRequestLeave } from "../../services/api.service";
 const { Option } = Select;
 
 const RequestLeave = () => {
@@ -27,23 +26,23 @@ const RequestLeave = () => {
       const res = await getRequestLeave(page - 1, size);
       if (res.data && res.data.leaveRequestDTOList) {
         setRequestLeave(res.data.leaveRequestDTOList);
-        setTotal(res.data.totalElements); // Cập nhật tổng số phần tử
+        setTotal(res.data.totalElements);
       } else {
-        message.error("Không lấy được dữ liệu nghỉ phép");
+        message.error("Can not get leave request");
       }
     } catch (error) {
-      console.error("Lỗi khi gọi API:", error);
-      message.error("Lỗi khi tải dữ liệu");
+      message.error("No data to response");
     }
   };
 
-  const handleUpdateRequest = (record) => {
-    setEditData(record);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteRequest = (id) => {
-    console.log(`delete request ${id}`);
+  const handleDeleteRequest = async (id) => {
+    try {
+      await deleteRequest(id);
+      message.success("Delete request leave successfully");
+      fetchRequestData();
+    } catch (error) {
+      message.error("Delete failed");
+    }
   };
 
   const columns = [
@@ -64,8 +63,8 @@ const RequestLeave = () => {
           status === "ACCEPTED"
             ? "green"
             : status === "REJECTED"
-            ? "red"
-            : "gold"; // "PENDING"
+              ? "red"
+              : "gold"; // "PENDING"
         return <Tag color={color}>{status}</Tag>;
       },
     },
@@ -74,9 +73,6 @@ const RequestLeave = () => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <button onClick={() => handleUpdateRequest(record)}>
-            <FaPencil size={20} className="text-yellow-500" />
-          </button>
           <button onClick={() => handleDeleteRequest(record.id)}>
             <IoTrashBin size={20} className="text-red-500" />
           </button>

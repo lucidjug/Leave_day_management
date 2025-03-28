@@ -39,12 +39,10 @@ function App() {
 
   const fetchUserAPI = async () => {
     setIsLoading(true);
-    console.log(token);
     if (token) {
       const res = await getMyInfo();
       if (res.data) {
         setUser(res.data.myInfoDTO);
-        console.log("User info:", res.data.myInfoDTO);
       }
     } else {
       navigate("/login");
