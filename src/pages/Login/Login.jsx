@@ -10,14 +10,18 @@ import {
   notification,
 } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
+
 import {
   AppleOutlined,
   GoogleOutlined,
   TwitterOutlined,
   FacebookOutlined,
 } from "@ant-design/icons";
+
+
 import "./Login.css";
 import LoginImg from "../../assets/login.webp";
+import { NavLink } from "react-router-dom";
 import { loginAPI } from "../../services/api.service";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
@@ -78,11 +82,13 @@ const Login = () => {
           >
             Login
           </Title>
+
           <Text
             type="secondary"
             style={{ display: "block", marginBottom: "2em" }}
           >
             please enter your login detail to sign in
+
           </Text>
 
           <Form form={form} name="login" onFinish={onFinish} layout="vertical">
@@ -128,9 +134,12 @@ const Login = () => {
             <Form.Item>
               <div className="login-options">
                 <Checkbox>Keep me logged in</Checkbox>
+
                 <a href="#" className="forgot-password">
                   Forgot password ?
                 </a>
+
+           
               </div>
             </Form.Item>
 
@@ -142,6 +151,7 @@ const Login = () => {
           </Form>
 
           <Text>
+
             Don’t have an account? <Link to="/register">Sign up</Link>
           </Text>
 
@@ -164,6 +174,7 @@ const Login = () => {
               />
             </div>
           </div>
+
         </Card>
       </div>
     </div>
