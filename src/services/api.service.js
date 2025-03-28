@@ -21,10 +21,14 @@ const createUser = (name, email, password) => {
     return axios.post(URL_BACKEND, data);
 };
 
-const fetchAll = (size = 20) => {
+const fetchAll = (page, size) => {
     const URL_BACKEND = "/users/view";
     return axios.get(URL_BACKEND, {
-        params: { size: size }
+        params: {
+            page: page,
+            size: size
+
+        }
     });
 };
 
@@ -42,10 +46,26 @@ const updateUser = (id, name, email, password) => {
     return axios.put("/users/update", { id, name, email, password });
 };
 
+const getRequestLeave = (page, size) => {
+    const URL_BACKEND = `/leave-requests/view?page=${page}&size=${size}`;
+    return axios.get(URL_BACKEND);
+};
+
+const loginAPI = (email, password) => {
+    const URL_BACKEND = "/auth/login";
+    const data = {
+        email: email,
+        password: password
+    };
+    return axios.post(URL_BACKEND, data);
+};
+
 export {
     createUser,
     fetchAll,
     deleteUser,
     getUserById,
-    updateUser
+    updateUser,
+    getRequestLeave,
+    loginAPI
 };
