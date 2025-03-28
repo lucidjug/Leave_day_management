@@ -29,7 +29,7 @@ const EmployeesList = () => {
 
   useEffect(() => {
     fetchData();
-  }, [[current, pageSize]]);
+  }, [current, pageSize]);
 
   // Mở modal update, fill sẵn form
   const handleUpdateRequest = async (id) => {

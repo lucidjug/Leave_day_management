@@ -1,20 +1,41 @@
-import React, { useState } from "react";
-import { Space, Table, Tag, Modal, Form, Input } from "antd";
+import React, { useEffect, useState } from "react";
+import { Space, Table, Tag, Modal, Form, Input, message } from "antd";
 import { FaPencil } from "react-icons/fa6";
 import { IoTrashBin } from "react-icons/io5";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
 import { Select } from "antd";
+import { getRequestLeave } from "../../services/api.service";
 const { Option } = Select;
 
 const RequestLeave = () => {
+  const [requestLeave, setRequestLeave] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   const [idRequest, setIdRequest] = useState("");
 
-  const [current, setCurrent] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
-  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
+  const [size, setSize] = useState(5)
+  const [total, setTotal] = useState(5)
+
+  useEffect(() => {
+    fetchRequestData()
+  }, [page, size])
+
+  const fetchRequestData = async () => {
+    try {
+      const res = await getRequestLeave(page - 1, size);
+      if (res.data && res.data.leaveRequestDTOList) {
+        setRequestLeave(res.data.leaveRequestDTOList);
+        setTotal(res.data.totalElements); // Cập nhật tổng số phần tử
+      } else {
+        message.error("Không lấy được dữ liệu nghỉ phép");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+      message.error("Lỗi khi tải dữ liệu");
+    }
+  };
 
   const handleUpdateRequest = (record) => {
     setEditData(record);
@@ -26,20 +47,28 @@ const RequestLeave = () => {
   };
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id" },
-    { title: "Employee ID", dataIndex: "employee_id", key: "employee_id" },
-    { title: "Manager ID", dataIndex: "manager_id", key: "manager_id" },
-    { title: "Start Date", dataIndex: "startDate", key: "startDate" },
-    { title: "End Date", dataIndex: "endDate", key: "endDate" },
-    { title: "Reason", dataIndex: "reason", key: "reason" },
+    {
+      title: "ID",
+      render: (_, record, index) => {
+        return (
+          <>
+            {(index + 1) + (page - 1) * size}
+          </>
+        )
+      }
+    },
+    { title: "Start Date", dataIndex: "startDate" },
+    { title: "End Date", dataIndex: "endDate" },
+    { title: "Reason", dataIndex: "reason" },
     {
       title: "Status",
-      key: "status",
       dataIndex: "status",
       render: (status) => {
         let color =
-          status === "Accept" ? "green" : status === "Reject" ? "red" : "gold";
-        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+          status === "ACCEPTED" ? "green" :
+            status === "REJECTED" ? "red" :
+              "gold"; // "PENDING"
+        return <Tag color={color}>{status}</Tag>;
       }
     },
     {
@@ -58,49 +87,20 @@ const RequestLeave = () => {
     },
   ];
 
-  const RequestLeavedata = [
-    {
-      id: "1",
-      employee_id: "John Brown",
-      manager_id: "Alice Smith",
-      startDate: "01/01/2025",
-      endDate: "01/02/2025",
-      reason: "Sick",
-      status: "Accept",
-    },
-    {
-      id: "2",
-      employee_id: "Jane Doe",
-      manager_id: "Bob Johnson",
-      startDate: "02/01/2025",
-      endDate: "02/05/2025",
-      reason: "Vacation",
-      status: "Pending",
-    },
-    {
-      id: "3",
-      employee_id: "Jane Doe",
-      manager_id: "Bob Johnson",
-      startDate: "02/01/2025",
-      endDate: "02/05/2025",
-      reason: "Vacation",
-      status: "Reject",
-    },
-  ];
-
   const onChange = (pagination, filters, sorter, extra) => {
     // setCurrent, setPageSize
     // nếu thay đổi trang: current
+    console.log(">>>>Check:", pagination)
     if (pagination && pagination.current) {
-      if (+pagination.current !== +current) {
-        setCurrent(+pagination.current) // "5" => 5
+      if (+pagination.current !== +page) {
+        setPage(+pagination.current) // "5" => 5
       }
     }
 
     // nếu thay đổi tổng số phần tử: pageSize
     if (pagination && pagination.pageSize) {
-      if (+pagination.pageSize !== +pageSize) {
-        setPageSize(+pagination.pageSize) // "5" => 5
+      if (+pagination.pageSize !== +size) {
+        setSize(+pagination.pageSize) // "5" => 5
       }
     }
   };
@@ -116,12 +116,12 @@ const RequestLeave = () => {
       <Table
         className="rounded-lg border"
         columns={columns}
-        dataSource={RequestLeavedata}
-
+        dataSource={requestLeave}
+        rowKey="id"
         pagination={
           {
-            current: current,
-            pageSize: pageSize,
+            current: page,
+            pageSize: size,
             showSizeChanger: true,
             total: total,
             showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
@@ -181,12 +181,12 @@ const RequestLeave = () => {
 
           <Form.Item label="Status">
             <Select
-              value={editData?.status}
-              onChange={(value) => setEditData({ ...editData, status: value })}
+              value={editData?.status || "PENDING"} // Đảm bảo có giá trị mặc định
+              onChange={(value) => setEditData(prev => ({ ...prev, status: value }))}
             >
-              <Option value="Accept">APPROVED</Option>
-              <Option value="Reject">REJECT</Option>
-              <Option value="Pending">PENDING</Option>
+              <Select.Option value="ACCEPTED">APPROVED</Select.Option>
+              <Select.Option value="REJECTED">REJECT</Select.Option>
+              <Select.Option value="PENDING">PENDING</Select.Option>
             </Select>
           </Form.Item>
         </Form>
