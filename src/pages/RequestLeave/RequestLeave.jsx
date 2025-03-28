@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Modal, Form, Input, message, DatePicker, Select } from "antd";
+import { Space, Table, Tag, Modal, Form, Input, message, DatePicker, Select,Button } from "antd";
 import { FaPencil } from "react-icons/fa6";
 import { IoTrashBin } from "react-icons/io5";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
 import dayjs from "dayjs";
-import { getRequestLeave, viewALLByDayRange } from "../../services/api.service";
+import { getRequestLeave, viewALLByDayRangeManager } from "../../services/api.service";
 
 const { RangePicker } = DatePicker;
 const RequestLeave = () => {
@@ -20,6 +20,10 @@ const RequestLeave = () => {
   useEffect(() => {
     fetchRequestData();
   }, [page, size, dateRange]);
+  const [idRequest, setIdRequest] = useState("");
+
+
+  
 
   const fetchRequestData = async () => {
     try {
@@ -27,7 +31,7 @@ const RequestLeave = () => {
       if (dateRange && dateRange.length === 2) {
         const startDate = dateRange[0].format("YYYY-MM-DD");
         const endDate = dateRange[1].format("YYYY-MM-DD");
-        res = await viewALLByDayRange(startDate, endDate, page - 1, size);
+        res = await viewALLByDayRangeManager(startDate, endDate, page - 1, size);
       } else {
         res = await getRequestLeave(page - 1, size);
       }
@@ -57,9 +61,15 @@ const RequestLeave = () => {
     {
       title: "Status",
       dataIndex: "status",
-      render: (status) => (
-        <Tag color={status === "ACCEPTED" ? "green" : status === "REJECTED" ? "red" : "gold"}>{status}</Tag>
-      ),
+      render: (status) => {
+        let color =
+          status === "ACCEPTED"
+            ? "green"
+            : status === "REJECTED"
+            ? "red"
+            : "gold"; // "PENDING"
+        return <Tag color={color}>{status}</Tag>;
+      },
     },
     {
       title: "Action",
@@ -108,6 +118,17 @@ const RequestLeave = () => {
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={() => console.log("Updated Data:", editData)}
+        footer={
+          <div className="flex items-center space-x-2">
+            {/* lát chỉnh */}
+            <Button key="cancel" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button key="submit" type="primary">
+              OK
+            </Button>
+          </div>
+        }
       >
         <Form layout="vertical">
           <Form.Item label="Employee ID">
