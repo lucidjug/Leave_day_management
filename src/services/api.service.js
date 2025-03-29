@@ -98,9 +98,24 @@ const getRequestLeaveByUserId = (id, pageRequest, sizeRequest) => {
   return axios.get(URL_BACKEND);
 };
 
-const getMyLeaveRequest = () => {
+const getMyLeaveRequest = (page, size) => {
   const URL_BACKEND = "/leave-requests/employee/view";
-  return axios.get(URL_BACKEND);
+  const params = { page, size };
+
+  return axios.get(URL_BACKEND, { params });
+};
+
+const getMyLeaveRequestByDateRange = (startDate, endDate, page, size) => {
+  const URL_BACKEND = "/leave-requests/employee/view-by-date-range";
+  const params = {
+    startDate,
+    endDate,
+    page,
+    size,
+  };
+  return axios.get(URL_BACKEND, {
+    params,
+  });
 };
 
 const createRequestLeave = (startDate, endDate, reason, status) => {
@@ -145,6 +160,7 @@ export {
   getAcceptRequest,
   getRejectRequest,
   getMyLeaveRequest,
+  getMyLeaveRequestByDateRange,
   createRequestLeave,
   employeeGetRequestById,
   employeeUpdateRequest,

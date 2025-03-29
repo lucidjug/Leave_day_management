@@ -1,11 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Modal, Form, Input, message, DatePicker, Select, Button, Flex } from "antd";
+import {
+  Space,
+  Table,
+  Tag,
+  Modal,
+  Form,
+  Input,
+  message,
+  DatePicker,
+  Select,
+  Button,
+  Flex,
+} from "antd";
 import { IoTrashBin } from "react-icons/io5";
 import { FaPencil } from "react-icons/fa6";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
 import Loading from "../../components/Loading/Loading";
 import { deleteRequest, getRequestLeave, viewALLByDayRangeManager, getRejectRequest, getAcceptRequest } from "../../services/api.service";
+
 const { Option } = Select;
 
 import dayjs from "dayjs";
@@ -27,14 +40,18 @@ const RequestLeave = () => {
   }, [page, size, dateRange]);
   const [idRequest, setIdRequest] = useState("");
 
-
   const fetchRequestData = async () => {
     try {
       let res;
       if (dateRange && dateRange.length === 2) {
         const startDate = dateRange[0].format("YYYY-MM-DD");
         const endDate = dateRange[1].format("YYYY-MM-DD");
-        res = await viewALLByDayRangeManager(startDate, endDate, page - 1, size);
+        res = await viewALLByDayRangeManager(
+          startDate,
+          endDate,
+          page - 1,
+          size
+        );
       } else {
         res = await getRequestLeave(page - 1, size);
       }
@@ -109,7 +126,7 @@ const RequestLeave = () => {
       }
 
       const res = await getAcceptRequest(editData.id);
-      console.log(res)
+
       if (res.status === 200) {
 
         setIsModalOpen(false);
@@ -133,7 +150,7 @@ const RequestLeave = () => {
       }
 
       const res = await getRejectRequest(editData.id);
-      console.log(res)
+
       if (res.status === 200) {
         message.error(res.data.message);
         setIsModalOpen(false);
@@ -170,7 +187,8 @@ const RequestLeave = () => {
           pageSize: size,
           showSizeChanger: true,
           total: total,
-          showTotal: (total, range) => `${range[0]}-${range[1]} trên ${total} rows`,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} on ${total} rows`,
         }}
         onChange={(pagination) => {
           setPage(pagination.current);
@@ -208,8 +226,6 @@ const RequestLeave = () => {
       >
         <p>Are you sure you want to update the status of this request?</p>
       </Modal>
-
-
     </div>
   );
 };
