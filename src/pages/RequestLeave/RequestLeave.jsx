@@ -102,8 +102,8 @@ const RequestLeave = () => {
           status === "ACCEPTED"
             ? "green"
             : status === "REJECTED"
-            ? "red"
-            : "gold"; // "PENDING"
+              ? "red"
+              : "gold"; // "PENDING"
         return <Tag color={color}>{status}</Tag>;
       },
     },
@@ -207,6 +207,7 @@ const RequestLeave = () => {
             <Button
               key="accept"
               type="primary"
+              danger
               style={{
                 backgroundColor: "green",
                 borderColor: "green",
