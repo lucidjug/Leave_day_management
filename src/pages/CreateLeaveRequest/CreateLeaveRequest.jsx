@@ -19,18 +19,20 @@ const CreateLeaveRequest = () => {
           description: "Your leave request has been submitted.",
         });
 
-        // Reset state sau khi gửi thành công
         setStartDate("");
         setEndDate("");
         setReason("");
+      } else {
+        notification.error({
+          message: "Error Creating Leave Request",
+          description: res.message,
+        });
       }
     } catch (error) {
       notification.error({
         message: "Error Creating Leave Request",
         description: error.message,
       });
-
-      console.error(error);
     }
   };
 

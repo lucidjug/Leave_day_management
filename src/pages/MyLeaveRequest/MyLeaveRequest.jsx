@@ -87,16 +87,23 @@ const MyLeaveRequest = () => {
   const handleUpdateSubmit = async () => {
     try {
       const values = form.getFieldsValue();
-      await employeeUpdateRequest(
+      const res = await employeeUpdateRequest(
         requestSelected.id,
         values.startDate,
         values.endDate,
         values.reason,
         values.status
       );
-      message.success("Update successful");
-      setIsModalOpen(false);
-      fetchRequestData();
+      if (res.data) {
+        message.success(res.data.message);
+        setIsModalOpen(false);
+        fetchRequestData();
+      } else {
+        notification.error({
+          message: "Update failed",
+          description: res.message,
+        });
+      }
     } catch (error) {
       notification.error({
         message: "Update failed",

@@ -18,7 +18,6 @@ import {
   FacebookOutlined,
 } from "@ant-design/icons";
 
-
 import "./Login.css";
 import LoginImg from "../../assets/login.webp";
 import { NavLink } from "react-router-dom";
@@ -51,6 +50,11 @@ const Login = () => {
         }
 
         navigate("/");
+      } else {
+        notification.error({
+          message: "Error Login",
+          description: res.message,
+        });
       }
     } catch (error) {
       notification.error({
@@ -87,7 +91,6 @@ const Login = () => {
             style={{ display: "block", marginBottom: "2em" }}
           >
             please enter your login detail to sign in
-
           </Text>
 
           <Form form={form} name="login" onFinish={onFinish} layout="vertical">
@@ -137,8 +140,6 @@ const Login = () => {
                 <a href="#" className="forgot-password">
                   Forgot password ?
                 </a>
-
-
               </div>
             </Form.Item>
 
@@ -150,7 +151,6 @@ const Login = () => {
           </Form>
 
           <Text>
-
             Don’t have an account? <Link to="/register">Sign up</Link>
           </Text>
 
@@ -173,7 +173,6 @@ const Login = () => {
               />
             </div>
           </div>
-
         </Card>
       </div>
     </div>

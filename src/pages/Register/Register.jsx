@@ -41,6 +41,11 @@ const Register = () => {
         message.success("Sign up successfully!");
 
         navigate("/login");
+      } else {
+        notification.error({
+          message: "Error Sign up",
+          description: res.message,
+        });
       }
     } catch (error) {
       notification.error({
