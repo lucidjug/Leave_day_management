@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Modal, Space, Table, Button, message, Drawer, Tag } from "antd";
+import {
+  Form,
+  Input,
+  Modal,
+  Space,
+  Table,
+  Button,
+  message,
+  Drawer,
+  Tag,
+} from "antd";
 import {
   fetchAll,
   deleteUser,
@@ -44,7 +54,8 @@ const EmployeesList = () => {
   }, [current, pageSize]);
 
   useEffect(() => {
-    if (isDrawerOpen && selectedUser?.id) { // Kiểm tra selectedUser có tồn tại
+    if (isDrawerOpen && selectedUser?.id) {
+      // Kiểm tra selectedUser có tồn tại
       getRequestLeaveByUserId(selectedUser.id, pageRequest - 1, sizeRequest)
         .then((res) => {
           setRequestLeaveList(res.data.leaveRequestDTOList);
@@ -126,7 +137,10 @@ const EmployeesList = () => {
     {
       title: "View Request",
       render: (_, record) => (
-        <Space size="middle" style={{ fontSize: "20px", paddingLeft: "30px", display: "flex" }}>
+        <Space
+          size="middle"
+          style={{ fontSize: "20px", paddingLeft: "30px", display: "flex" }}
+        >
           <button onClick={() => handleViewRequest(record.id)}>
             <EyeOutlined size={20} className="text-yellow-500" />
           </button>
@@ -162,8 +176,8 @@ const EmployeesList = () => {
           status === "ACCEPTED"
             ? "green"
             : status === "REJECTED"
-              ? "red"
-              : "gold";
+            ? "red"
+            : "gold";
         return <Tag color={color}>{status}</Tag>;
       },
     },
@@ -222,7 +236,7 @@ const EmployeesList = () => {
             return (
               <div>
                 {" "}
-                {range[0]}-{range[1]} trên {total} rows
+                {range[0]}-{range[1]} on {total} rows
               </div>
             );
           },
@@ -286,7 +300,7 @@ const EmployeesList = () => {
               return (
                 <div>
                   {" "}
-                  {range[0]}-{range[1]} trên {total} rows
+                  {range[0]}-{range[1]} on {total} rows
                 </div>
               );
             },
@@ -294,7 +308,6 @@ const EmployeesList = () => {
           onChange={onChangeRequest}
         />
       </Drawer>
-
     </div>
   );
 };

@@ -46,7 +46,6 @@ function App() {
         const res = await getMyInfo();
         if (res.data) {
           setUser(res.data.myInfoDTO);
-          console.log("User info:", res.data.myInfoDTO);
         }
       } catch (error) {
         navigate("/login");

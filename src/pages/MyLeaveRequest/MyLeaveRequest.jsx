@@ -10,61 +10,59 @@ import {
   DatePicker,
   Select,
   Button,
-  Flex,
   notification,
 } from "antd";
-import { IoPencil, IoTrashBin } from "react-icons/io5";
-import { FaPencil } from "react-icons/fa6";
-import Search_Input from "../../components/Search_Input/Search_Input";
-import FilterInput from "../../components/FilterInput/FilterInput";
-
+import { FaPencilAlt } from "react-icons/fa";
+import dayjs from "dayjs";
 import {
   getMyLeaveRequest,
+  getMyLeaveRequestByDateRange,
   employeeGetRequestById,
   employeeUpdateRequest,
 } from "../../services/api.service";
-import { FaPencilAlt } from "react-icons/fa";
-
-const { Option } = Select;
-
-import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
+
 const MyLeaveRequest = () => {
   const [requestLeave, setRequestLeave] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editData, setEditData] = useState(null);
-  const [dateRange, setDateRange] = useState(null);
+  const [dateRange, setDateRange] = useState([]);
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(5);
   const [total, setTotal] = useState(0);
-
-  // const [startDate, setStartDate] = useState("");
-  // const [endDate, setEndDate] = useState("");
-  // const [reason, setReason] = useState("");
-  // const [status, setStatus] = useState("");
-
   const [requestSelected, setRequestSelected] = useState([]);
-
   const [form] = Form.useForm();
 
   useEffect(() => {
     fetchRequestData();
   }, [page, size, dateRange]);
-  const [idRequest, setIdRequest] = useState("");
 
   const fetchRequestData = async () => {
     try {
-      const res = await getMyLeaveRequest();
-      if (res.data) {
-        setRequestLeave(res.data.leaveRequestDTOList);
-        // setTotal(res.data.totalElements);
+      let res;
+      if (dateRange.length === 2) {
+        res = await getMyLeaveRequestByDateRange(
+          dateRange[0].format("YYYY-MM-DD"),
+          dateRange[1].format("YYYY-MM-DD"),
+          page - 1,
+          size
+        );
+      } else {
+        res = await getMyLeaveRequest(page - 1, size);
       }
 
-      console.log(res);
+      if (res.data) {
+        setRequestLeave(res.data.leaveRequestDTOList);
+        setTotal(res.data.totalElements);
+      }
     } catch (error) {
-      message.error("No data to response");
+      message.error("No data available to display");
     }
+  };
+
+  const handleDateChange = (dates) => {
+    setDateRange(dates || []);
+    setPage(1);
   };
 
   const handleUpdateRequest = async (id) => {
@@ -80,10 +78,9 @@ const MyLeaveRequest = () => {
         status: leaveRequest.status,
       });
 
-      console.log(leaveRequest);
       setIsModalOpen(true);
     } catch (error) {
-      message.error("Failed to fetch request leave data");
+      message.error("Error fetching leave request data");
     }
   };
 
@@ -97,7 +94,7 @@ const MyLeaveRequest = () => {
         values.reason,
         values.status
       );
-      message.success("Update successfully");
+      message.success("Update successful");
       setIsModalOpen(false);
       fetchRequestData();
     } catch (error) {
@@ -122,7 +119,7 @@ const MyLeaveRequest = () => {
             ? "green"
             : status === "REJECTED"
             ? "red"
-            : "gold"; // "PENDING"
+            : "gold";
         return <Tag color={color}>{status}</Tag>;
       },
     },
@@ -130,12 +127,7 @@ const MyLeaveRequest = () => {
       title: "Action",
       render: (_, record) => (
         <Space size="middle">
-          <button
-            onClick={() => {
-              handleUpdateRequest(record.id);
-              setIsModalOpen(true);
-            }}
-          >
+          <button onClick={() => handleUpdateRequest(record.id)}>
             <FaPencilAlt size={20} className="text-yellow-500" />
           </button>
         </Space>
@@ -146,11 +138,7 @@ const MyLeaveRequest = () => {
   return (
     <div className="bg-white rounded-xl p-8 shadow-lg w-full">
       <h1 className="text-2xl font-semibold mb-6">Request Leave</h1>
-      {/* <div className="flex items-center justify-between mb-6">
-        <Search_Input />
-        <FilterInput />
-        <RangePicker onChange={handleDateChange} />
-      </div> */}
+      <RangePicker onChange={handleDateChange} className="mb-4" />
 
       <Table
         className="rounded-lg border"
@@ -163,7 +151,7 @@ const MyLeaveRequest = () => {
           showSizeChanger: true,
           total: total,
           showTotal: (total, range) =>
-            `${range[0]}-${range[1]} trên ${total} rows`,
+            `${range[0]}-${range[1]} of ${total} entries`,
         }}
         onChange={(pagination) => {
           setPage(pagination.current);
@@ -172,16 +160,14 @@ const MyLeaveRequest = () => {
       />
 
       <Modal
-        title="Update User"
+        title="Update Leave Request"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={
           <div className="flex items-center space-x-2">
-            <Button key="cancel" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button key="submit" type="primary" onClick={handleUpdateSubmit}>
-              OK
+            <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
+            <Button type="primary" onClick={handleUpdateSubmit}>
+              Save
             </Button>
           </div>
         }
@@ -190,33 +176,26 @@ const MyLeaveRequest = () => {
           <Form.Item
             label="Start Date"
             name="startDate"
-            type="date"
-            rules={[{ required: true, message: "Please input start date" }]}
+            rules={[{ required: true, message: "Please select a date" }]}
           >
             <DatePicker />
           </Form.Item>
           <Form.Item
             label="End Date"
             name="endDate"
-            type="date"
-            rules={[{ required: true, message: "Please input end date" }]}
+            rules={[{ required: true, message: "Please select a date" }]}
           >
             <DatePicker />
           </Form.Item>
           <Form.Item
             label="Reason"
             name="reason"
-            rules={[{ required: true, message: "Please input your reason" }]}
+            rules={[{ required: true, message: "Please enter a reason" }]}
           >
             <Input />
           </Form.Item>
-
-          <Form.Item
-            label="Status"
-            name="status"
-            rules={[{ required: true, message: "Please input your reason" }]}
-          >
-            <Input disabled={true} />
+          <Form.Item label="Status" name="status">
+            <Input disabled />
           </Form.Item>
         </Form>
       </Modal>

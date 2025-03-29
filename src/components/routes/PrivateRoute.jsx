@@ -9,11 +9,6 @@ const PrivateRoute = ({ role, children }) => {
   // const [isLoading, setIsLoading] = useState(true);
   const token = localStorage.getItem("access_token");
 
-  // if (!user || !user.id || !token) {
-  //   console.log("kicked user");
-  //   return <Navigate to="/login" replace />;
-  // }
-
   if (isLoading) return;
   if (role && user.role !== role) {
     return (
