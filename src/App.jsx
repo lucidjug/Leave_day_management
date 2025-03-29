@@ -99,18 +99,23 @@ function App() {
         <Route
           path="/employees-list"
           element={
-            <SidebarLayout>
-              <EmployeesList />
-            </SidebarLayout>
+            <PrivateRoute role="MANAGER">
+              <SidebarLayout>
+                <EmployeesList />
+              </SidebarLayout>
+            </PrivateRoute>
           }
         />
 
+        {/* Employee  */}
         <Route
           path="/create-request"
           element={
-            <SidebarLayout>
-              <CreateLeaveRequest />
-            </SidebarLayout>
+            <PrivateRoute role="EMPLOYEE">
+              <SidebarLayout>
+                <CreateLeaveRequest />
+              </SidebarLayout>
+            </PrivateRoute>
           }
         />
 
@@ -124,16 +129,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
-        {/* Admin routes */}
-        {/* <Route
-          path=""
-          element={
-            <SidebarLayout>
-              
-            </SidebarLayout>
-          }
-        /> */}
       </Routes>
       <ToastContainer />
     </>
