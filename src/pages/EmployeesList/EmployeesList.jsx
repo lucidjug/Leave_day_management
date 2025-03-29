@@ -42,7 +42,7 @@ const EmployeesList = () => {
   const fetchData = async () => {
     try {
       const res = await fetchAll(current - 1, pageSize);
-      setEmployeeList(res.data.userDTOList);
+      setEmployeeList(res.data.userResponseDTOList);
       setTotal(res.data.totalElements);
     } catch (error) {
       console.error("Fetch failed:", error);
@@ -146,6 +146,11 @@ const EmployeesList = () => {
           </button>
         </Space>
       ),
+    },
+    {
+      title: "Remaining Of Leave Days",
+      dataIndex: "leaveDays",
+      key: "leaveDays",
     },
     {
       title: "Action",

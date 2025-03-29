@@ -17,7 +17,13 @@ import { FaPencil } from "react-icons/fa6";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
 import Loading from "../../components/Loading/Loading";
-import { deleteRequest, getRequestLeave, viewALLByDayRangeManager, getRejectRequest, getAcceptRequest } from "../../services/api.service";
+import {
+  deleteRequest,
+  getRequestLeave,
+  viewALLByDayRangeManager,
+  getRejectRequest,
+  getAcceptRequest,
+} from "../../services/api.service";
 const { Option } = Select;
 
 import dayjs from "dayjs";
@@ -32,7 +38,6 @@ const RequestLeave = () => {
   const [size, setSize] = useState(5);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-
 
   useEffect(() => {
     fetchRequestData();
@@ -117,7 +122,7 @@ const RequestLeave = () => {
     },
   ];
   const handleAcceptRequest = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       if (!editData || !editData.id) {
         message.error("No request selected!");
@@ -127,7 +132,6 @@ const RequestLeave = () => {
       const res = await getAcceptRequest(editData.id);
 
       if (res.status === 200) {
-
         setIsModalOpen(false);
         message.success(res.data.message);
         fetchRequestData();
@@ -138,7 +142,7 @@ const RequestLeave = () => {
       console.error("Error approving request:", error);
       message.error("An error occurred while approving the request!");
     }
-    setLoading(false)
+    setLoading(false);
   };
 
   const handleRejectRequest = async () => {
@@ -203,8 +207,12 @@ const RequestLeave = () => {
             <Button
               key="accept"
               type="primary"
+              style={{
+                backgroundColor: "green",
+                borderColor: "green",
+                maxWidth: 100,
+              }}
               block
-              style={{ maxWidth: 100 }}
               onClick={handleAcceptRequest}
             >
               ACCEPT
@@ -213,8 +221,8 @@ const RequestLeave = () => {
               key="reject"
               type="primary"
               danger
-              block
               style={{ maxWidth: 100 }}
+              block
               onClick={handleRejectRequest}
             >
               REJECT

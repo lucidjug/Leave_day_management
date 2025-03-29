@@ -12,51 +12,8 @@ dayjs.extend(customParseFormat);
 // const dateFormat = "YYYY-MM-DD";
 
 export default function Profile() {
- const { user } = useContext(AuthContext);
- console.log(user);
-
-  // const [formData, setFormData] = useState({
-  //   name: "",
-  //   mssv: "",
-  //   email: "",
-  //   role: "ADMIN",
-  // });
-
-  // const [isModalVisible, setIsModalVisible] = useState(false);
-  // const [password, setPassword] = useState({
-  //   oldPassword: "",
-  //   password: "",
-  // });
-  // const [isEditing, setIsEditing] = useState(false);
-
-  // const handleEditClick = () => {
-  //   setIsEditing(!isEditing);
-  // };
-
-  // const showModal = () => {
-  //   setIsModalVisible(true);
-  // };
-
-  // const handleCancel = () => {
-  //   setIsModalVisible(false);
-  //   setPassword({ oldPassword: "", password: "" });
-  // };
-
-  // const handleInputChange = (name) => (event) => {
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     [name]: event.target.value,
-  //   }));
-  // };
-
-  // const handleDateChange = (date) => {
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     birthDate: date ? date.format(dateFormat) : "",
-  //   }));
-  // };
-
-
+  const { user } = useContext(AuthContext);
+  console.log(user);
 
   return (
     <div id="wrapper">
@@ -71,9 +28,7 @@ export default function Profile() {
               <img src={avatar} alt="Avatar" className="avatar" />
             </div>
             <div className="email-container">
-              <div>
-                {user.name}
-              </div>
+              <div>{user.name}</div>
               <p className="email">{user.email}</p>
             </div>
             {/* <div className="change-password">
@@ -98,10 +53,10 @@ export default function Profile() {
             <Form.Item label="ID">
               <Input value={user.id} disabled />
             </Form.Item>
-{/* 
-            <Form.Item label="Number of leave days">
+
+            <Form.Item label="Remaining of leave days">
               <Input value={user.leaveDays} disabled />
-            </Form.Item> */}
+            </Form.Item>
 
             <Form.Item label="Email">
               <Input value={user.email} disabled />
