@@ -18,7 +18,6 @@ import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
 import Loading from "../../components/Loading/Loading";
 import { deleteRequest, getRequestLeave, viewALLByDayRangeManager, getRejectRequest, getAcceptRequest } from "../../services/api.service";
-
 const { Option } = Select;
 
 import dayjs from "dayjs";
@@ -46,12 +45,6 @@ const RequestLeave = () => {
       if (dateRange && dateRange.length === 2) {
         const startDate = dateRange[0].format("YYYY-MM-DD");
         const endDate = dateRange[1].format("YYYY-MM-DD");
-        res = await viewALLByDayRangeManager(
-          startDate,
-          endDate,
-          page - 1,
-          size
-        );
         res = await viewALLByDayRangeManager(
           startDate,
           endDate,
@@ -104,8 +97,8 @@ const RequestLeave = () => {
           status === "ACCEPTED"
             ? "green"
             : status === "REJECTED"
-              ? "red"
-              : "gold"; // "PENDING"
+            ? "red"
+            : "gold"; // "PENDING"
         return <Tag color={color}>{status}</Tag>;
       },
     },
@@ -133,7 +126,6 @@ const RequestLeave = () => {
 
       const res = await getAcceptRequest(editData.id);
 
-
       if (res.status === 200) {
 
         setIsModalOpen(false);
@@ -157,8 +149,6 @@ const RequestLeave = () => {
       }
 
       const res = await getRejectRequest(editData.id);
-
-
       if (res.status === 200) {
         message.error(res.data.message);
         setIsModalOpen(false);
