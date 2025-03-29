@@ -52,6 +52,12 @@ const RequestLeave = () => {
           page - 1,
           size
         );
+        res = await viewALLByDayRangeManager(
+          startDate,
+          endDate,
+          page - 1,
+          size
+        );
       } else {
         res = await getRequestLeave(page - 1, size);
       }
@@ -127,6 +133,7 @@ const RequestLeave = () => {
 
       const res = await getAcceptRequest(editData.id);
 
+
       if (res.status === 200) {
 
         setIsModalOpen(false);
@@ -150,6 +157,7 @@ const RequestLeave = () => {
       }
 
       const res = await getRejectRequest(editData.id);
+
 
       if (res.status === 200) {
         message.error(res.data.message);
