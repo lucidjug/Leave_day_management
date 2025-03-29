@@ -114,6 +114,20 @@ const createRequestLeave = (startDate, endDate, reason, status) => {
   return axios.post(URL_BACKEND, data);
 };
 
+const employeeUpdateRequest = (id, startDate, endDate, reason, status) => {
+  return axios.put(`/leave-requests/update/${id}`, {
+    startDate: startDate,
+    endDate: endDate,
+    reason: reason,
+    status: status,
+  });
+};
+
+const employeeGetRequestById = (id) => {
+  const URL_BACKEND = `leave-requests/view/${id}`;
+  return axios.get(URL_BACKEND);
+};
+
 export {
   viewALLByDayRangeManager,
   viewByIDManager,
@@ -132,4 +146,6 @@ export {
   getRejectRequest,
   getMyLeaveRequest,
   createRequestLeave,
+  employeeGetRequestById,
+  employeeUpdateRequest,
 };
