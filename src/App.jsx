@@ -28,6 +28,7 @@ import { AuthContext } from "./context/AuthContext";
 import { getMyInfo } from "./services/api.service";
 import { Spin } from "antd";
 import MyLeaveRequest from "./pages/MyLeaveRequest/MyLeaveRequest";
+import Dashboard from "./pages/Dashboard/Dashboard";
 function App() {
   const { user, setUser, isLoading, setIsLoading } = useContext(AuthContext);
 
@@ -74,7 +75,14 @@ function App() {
 
         {/* All roles */}
         {/* <Route path="/" element={<HomePage />} /> */}
-        <Route path="/" element={<SidebarLayout></SidebarLayout>} />
+        <Route
+          path="/"
+          element={
+            <SidebarLayout>
+              <Dashboard />
+            </SidebarLayout>
+          }
+        />
 
         <Route
           path="/profile"

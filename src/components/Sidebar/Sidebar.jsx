@@ -82,13 +82,13 @@ const Sidebar = () => {
           </>
         )}
 
-        <NavLink
+        {/* <NavLink
           to="/help"
           className={({ isActive }) => getNavLinkClass(isActive)}
         >
           <MdOutlineLiveHelp size={18} />
           <div>Help</div>
-        </NavLink>
+        </NavLink> */}
 
         <button
           className="bg-red-600 hover:bg-red-700 p-2 rounded-md text-white w-full"
