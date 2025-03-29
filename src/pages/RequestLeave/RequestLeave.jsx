@@ -4,8 +4,8 @@ import { IoTrashBin } from "react-icons/io5";
 import { FaPencil } from "react-icons/fa6";
 import Search_Input from "../../components/Search_Input/Search_Input";
 import FilterInput from "../../components/FilterInput/FilterInput";
-
-import { deleteRequest, getRequestLeave,viewALLByDayRangeManager, getRejectRequest, getAcceptRequest } from "../../services/api.service";
+import Loading from "../../components/Loading/Loading";
+import { deleteRequest, getRequestLeave, viewALLByDayRangeManager, getRejectRequest, getAcceptRequest } from "../../services/api.service";
 const { Option } = Select;
 
 import dayjs from "dayjs";
@@ -19,6 +19,8 @@ const RequestLeave = () => {
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(5);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     fetchRequestData();
@@ -48,6 +50,10 @@ const RequestLeave = () => {
     }
   };
 
+  const handleUpdateRequest = (record) => {
+    setEditData(record);
+    setIsModalOpen(true);
+  };
 
   const handleDeleteRequest = async (id) => {
     try {
@@ -84,6 +90,9 @@ const RequestLeave = () => {
       title: "Action",
       render: (_, record) => (
         <Space size="middle">
+          <button onClick={() => handleUpdateRequest(record)}>
+            <FaPencil size={20} className="text-yellow-500" />
+          </button>
           <button onClick={() => handleDeleteRequest(record.id)}>
             <IoTrashBin size={20} className="text-red-500" />
           </button>
@@ -92,6 +101,7 @@ const RequestLeave = () => {
     },
   ];
   const handleAcceptRequest = async () => {
+    setLoading(true)
     try {
       if (!editData || !editData.id) {
         message.error("No request selected!");
@@ -101,7 +111,7 @@ const RequestLeave = () => {
       const res = await getAcceptRequest(editData.id);
       console.log(res)
       if (res.status === 200) {
-        
+
         setIsModalOpen(false);
         message.success(res.data.message);
         fetchRequestData();
@@ -112,6 +122,7 @@ const RequestLeave = () => {
       console.error("Error approving request:", error);
       message.error("An error occurred while approving the request!");
     }
+    setLoading(false)
   };
 
   const handleRejectRequest = async () => {
@@ -136,6 +147,9 @@ const RequestLeave = () => {
     }
   };
 
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="bg-white rounded-xl p-8 shadow-lg w-full">
@@ -175,7 +189,7 @@ const RequestLeave = () => {
               type="primary"
               block
               style={{ maxWidth: 100 }}
-              onClick={handleAcceptRequest} 
+              onClick={handleAcceptRequest}
             >
               ACCEPT
             </Button>
@@ -185,7 +199,7 @@ const RequestLeave = () => {
               danger
               block
               style={{ maxWidth: 100 }}
-              onClick={handleRejectRequest} 
+              onClick={handleRejectRequest}
             >
               REJECT
             </Button>
