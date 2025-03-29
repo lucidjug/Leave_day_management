@@ -148,7 +148,7 @@ const EmployeesList = () => {
       ),
     },
     {
-      title: "Remaining Of Leave Days",
+      title: "Remaining Leave Days",
       dataIndex: "leaveDays",
       key: "leaveDays",
     },
@@ -181,8 +181,8 @@ const EmployeesList = () => {
           status === "ACCEPTED"
             ? "green"
             : status === "REJECTED"
-            ? "red"
-            : "gold";
+              ? "red"
+              : "gold";
         return <Tag color={color}>{status}</Tag>;
       },
     },

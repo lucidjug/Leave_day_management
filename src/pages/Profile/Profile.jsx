@@ -54,7 +54,7 @@ export default function Profile() {
               <Input value={user.id} disabled />
             </Form.Item>
 
-            <Form.Item label="Remaining of leave days">
+            <Form.Item label="Remaining leave days">
               <Input value={user.leaveDays} disabled />
             </Form.Item>
 
